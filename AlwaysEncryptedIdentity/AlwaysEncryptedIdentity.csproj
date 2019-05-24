@@ -4,11 +4,12 @@
     <TargetFrameworks>net472</TargetFrameworks>
     <Authors>IoannisTsirovasilis</Authors>
     <PackageId>AlwaysEncryptedIdentity</PackageId>
-    <PackageLicenseUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity</RepositoryUrl>
     <PackageTags>.net framework, identity, always encrypted, asp .net, aspnet, .net, encryption</PackageTags>
     <NeutralLanguage></NeutralLanguage>
+    <Description>An extension of ASP .NET Identity system to work with Always Encrypted feature.</Description>
   </PropertyGroup>
   
   <ItemGroup>
