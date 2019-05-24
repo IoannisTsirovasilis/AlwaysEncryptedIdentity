@@ -19,4 +19,4 @@ If you would like to customize AspNetUsers table by adding more columns, then yo
 
 It is necessary to create a model including the tables AspNetRoles, AspNetUserRoles and AspNetUsers, using dbo Schema.
 
-The nuget could further extend to make the Role Manage work with Always Encrypted, but since the above tables are included in the model, one can manage user roles by using that model.
+The nuget could further extend to make the Role Manager work with Always Encrypted, but since the above tables are included in the model, one can manage user roles by using that model.
