@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.SqlClient;
 using System.Data.Entity;
 using System.Web.Helpers;
+using System.Data.Entity.SqlServer.Utilities;
 
 namespace AlwaysEncryptedIdentity
 {
@@ -36,9 +37,9 @@ namespace AlwaysEncryptedIdentity
             do
             {
                 user.Id = Guid.NewGuid().ToString();
-            } while (db.AspNetUsers.Find(user.Id) != null);
+            } while (await db.AspNetUsers.FindAsync(user.Id).WithCurrentCulture() != null);
             var sql = GetInsertUserQuery();
-            db.Database.ExecuteSqlCommand(
+            db.Database.ExecuteSqlCommandAsync(
                 sql,
                 new SqlParameter("@Id", user.Id),
                 new SqlParameter("@Email", user.Email.ToLower()),
@@ -51,28 +52,28 @@ namespace AlwaysEncryptedIdentity
                 new SqlParameter("@LockoutEnabled", user.LockoutEnabled),
                 new SqlParameter("@AccessFailedCount", user.AccessFailedCount),
                 new SqlParameter("@UserName", user.UserName.ToLower())
-            );
-            db.SaveChanges();
-            await UpdateSecurityStampAsync(user.Id);
+            ).WithCurrentCulture();
+            await db.SaveChangesAsync().WithCurrentCulture();
+            await UpdateSecurityStampAsync(user.Id).WithCurrentCulture();
             return IdentityResult.Success;
         }
 
         public override async Task<IdentityResult> ConfirmEmailAsync(string userId, string token)
         {
             ThrowIfDisposed();
-            var user = db.AspNetUsers.Find(userId);
+            var user = await db.AspNetUsers.FindAsync(userId).WithCurrentCulture();
             if (user == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "User Id Not Found",
                     userId));
             }
-            if (!VerifyUserTokenAsync(user.Id, "Confirmation", token).Result)
+            if (!await VerifyUserTokenAsync(user.Id, "Confirmation", token).WithCurrentCulture())
             {
                 return IdentityResult.Failed("Failed");
             }
             user.EmailConfirmed = true;
             db.Entry(user).State = EntityState.Modified;
-            db.SaveChanges();
+            await db.SaveChangesAsync().WithCurrentCulture();
             return IdentityResult.Success;
         }
 
@@ -80,37 +81,37 @@ namespace AlwaysEncryptedIdentity
         {
             ThrowIfDisposed();
             var securityStore = GetSecurityStore();
-            var user = await FindByIdAsync(userId);
+            var user = await FindByIdAsync(userId).WithCurrentCulture();
             if (user == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "User Id Not Found",
                     userId));
             }
             var securityStamp = Guid.NewGuid().ToString();
-            await securityStore.SetSecurityStampAsync(user, securityStamp);
-            var aspNetUser = db.AspNetUsers.Find(userId);
+            await securityStore.SetSecurityStampAsync(user, securityStamp).WithCurrentCulture();
+            var aspNetUser = await db.AspNetUsers.FindAsync(userId).WithCurrentCulture();
             aspNetUser.SecurityStamp = securityStamp;
             db.Entry(aspNetUser).State = EntityState.Modified;
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             return IdentityResult.Success;
         }
 
         public override async Task<IdentityResult> ResetPasswordAsync(string userId, string token, string newPassword)
         {
             ThrowIfDisposed();
-            var user = await FindByIdAsync(userId);
+            var user = await FindByIdAsync(userId).WithCurrentCulture();
             if (user == null)
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "User Id Not Found",
                     userId));
             }
             // Make sure the token is valid and the stamp matches
-            if (!await VerifyUserTokenAsync(userId, "ResetPassword", token))
+            if (!await VerifyUserTokenAsync(userId, "ResetPassword", token).WithCurrentCulture())
             {
                 return IdentityResult.Failed("Invalid Token");
             }
             var passwordStore = GetPasswordStore();
-            var result = await UpdatePassword(passwordStore, user, newPassword);
+            var result = await UpdatePassword(passwordStore, user, newPassword).WithCurrentCulture();
 
             return result;
         }
@@ -118,16 +119,16 @@ namespace AlwaysEncryptedIdentity
         protected override async Task<IdentityResult> UpdatePassword(IUserPasswordStore<TUser, string> passwordStore,
             TUser user, string newPassword)
         {
-            var result = await PasswordValidator.ValidateAsync(newPassword);
+            var result = await PasswordValidator.ValidateAsync(newPassword).WithCurrentCulture();
             if (!result.Succeeded)
             {
                 return result;
             }
-            var aspNetUser = db.AspNetUsers.Find(user.Id);
+            var aspNetUser = await db.AspNetUsers.FindAsync(user.Id).WithCurrentCulture();
             aspNetUser.PasswordHash = Crypto.HashPassword(newPassword);
             db.Entry(aspNetUser).State = EntityState.Modified;
-            db.SaveChanges();
-            await UpdateSecurityStampAsync(user.Id);
+            await db.SaveChangesAsync().WithCurrentCulture();
+            await UpdateSecurityStampAsync(user.Id).WithCurrentCulture();
             return IdentityResult.Success;
         }
 
