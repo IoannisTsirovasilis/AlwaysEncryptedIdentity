@@ -72,8 +72,12 @@ namespace AlwaysEncryptedIdentity
             {
                 return IdentityResult.Failed("Failed");
             }
-            user.EmailConfirmed = true;
-            db.Entry(user).State = EntityState.Modified;
+            var sql = GetEmailConfirmedQuery();
+            await db.Database.ExecuteSqlCommandAsync(
+                sql,
+                new SqlParameter("@Id", user.Id),
+                new SqlParameter("@EmailConfirmed", true)
+            ).ConfigureAwait(false);
             await db.SaveChangesAsync().ConfigureAwait(false);
             return IdentityResult.Success;
         }
@@ -90,9 +94,12 @@ namespace AlwaysEncryptedIdentity
             }
             var securityStamp = Guid.NewGuid().ToString();
             await securityStore.SetSecurityStampAsync(user, securityStamp).WithCurrentCulture();
-            var aspNetUser = await db.AspNetUsers.FindAsync(userId).ConfigureAwait(false);
-            aspNetUser.SecurityStamp = securityStamp;
-            db.Entry(aspNetUser).State = EntityState.Modified;
+            var sql = GetUpdateSecurityStampQuery();
+            await db.Database.ExecuteSqlCommandAsync(
+                sql,
+                new SqlParameter("@Id", user.Id),
+                new SqlParameter("@SecurityStamp", securityStamp)
+            ).ConfigureAwait(false);
             await db.SaveChangesAsync().ConfigureAwait(false);
             return IdentityResult.Success;
         }
@@ -113,7 +120,6 @@ namespace AlwaysEncryptedIdentity
             }
             var passwordStore = GetPasswordStore();
             var result = await UpdatePassword(passwordStore, user, newPassword).WithCurrentCulture();
-
             return result;
         }
 
@@ -125,11 +131,14 @@ namespace AlwaysEncryptedIdentity
             {
                 return result;
             }
-            var aspNetUser = await db.AspNetUsers.FindAsync(user.Id).ConfigureAwait(false);
-            aspNetUser.PasswordHash = Crypto.HashPassword(newPassword);
-            db.Entry(aspNetUser).State = EntityState.Modified;
-            await db.SaveChangesAsync().ConfigureAwait(false);
+            var sql = GetUpdatePasswordHashQuery();
+            await db.Database.ExecuteSqlCommandAsync(
+                sql,
+                new SqlParameter("@Id", user.Id),
+                new SqlParameter("@PasswordHash", Crypto.HashPassword(newPassword))
+            ).ConfigureAwait(false);            
             await UpdateSecurityStampAsync(user.Id).WithCurrentCulture();
+            await db.SaveChangesAsync().ConfigureAwait(false);
             return IdentityResult.Success;
         }
 
@@ -169,11 +178,26 @@ namespace AlwaysEncryptedIdentity
 
         private string GetInsertUserQuery()
         {
-            return @"INSERT INTO [dbo].[AspNetUsers] (Id, Email, EmailConfirmed, PasswordHash, PhoneNumber, PhoneNumberConfirmed,
-                     TwoFactorEnabled, LockoutEndDateUtc, LockoutEnabled, AccessFailedCount, UserName)
+            return @"INSERT INTO [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [PhoneNumber], [PhoneNumberConfirmed],
+                     [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName])
                      VALUES (@Id, @Email, @EmailConfirmed, @PasswordHash, @PhoneNumber, 
                      @PhoneNumberConfirmed, @TwoFactorEnabled, @LockoutEndDateUtc, @LockoutEnabled,
                      @AccessFailedCount, @UserName)";
+        }
+
+        private string GetEmailConfirmedQuery()
+        {
+            return @"UPDATE [dbo].[AspNetUsers] SET [EmailConfirmed] = @EmailConfirmed WHERE [Id] = @Id";
+        }
+
+        private string GetUpdateSecurityStampQuery()
+        {
+            return @"UPDATE [dbo].[AspNetUsers] SET [SecurityStamp] = @SecurityStamp WHERE [Id] = @Id";
+        }
+
+        private string GetUpdatePasswordHashQuery()
+        {
+            return @"UPDATE [dbo].[AspNetUsers] SET [PasswordHash] = @PasswordHash WHERE [Id] = @Id";
         }
     }
 }
