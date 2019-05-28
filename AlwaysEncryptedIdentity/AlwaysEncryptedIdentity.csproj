@@ -10,8 +10,9 @@
     <PackageTags>.net framework, identity, always encrypted, asp .net, aspnet, .net, encryption</PackageTags>
     <NeutralLanguage></NeutralLanguage>
     <Description>An extension of ASP .NET Identity system to work with Always Encrypted feature.</Description>
-    <Version>1.0.1</Version>
-    <PackageReleaseNotes>Fixed bugs with asynchronous calls to the database</PackageReleaseNotes>
+    <Version>1.0.1.2</Version>
+    <PackageReleaseNotes></PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
   <ItemGroup>

@@ -68,7 +68,7 @@ namespace AlwaysEncryptedIdentity
                 throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "User Id Not Found",
                     userId));
             }
-            if (!await VerifyUserTokenAsync(user.Id, "Confirmation", token).WithCurrentCulture())
+            if (!await VerifyUserTokenAsync(userId, "Confirmation", token).WithCurrentCulture())
             {
                 return IdentityResult.Failed("Failed");
             }
