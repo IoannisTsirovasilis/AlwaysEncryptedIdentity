@@ -10,8 +10,8 @@
     <PackageTags>.net framework, identity, always encrypted, asp .net, aspnet, .net, encryption</PackageTags>
     <NeutralLanguage></NeutralLanguage>
     <Description>An extension of ASP .NET Identity system to work with Always Encrypted feature.</Description>
-    <Version>1.0.1.4</Version>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <Version>1.0.2</Version>
+    <PackageReleaseNotes>Fixed a bug where the system would allow the registration of a users with same email despite the value of RequireUniqueEmail property.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
