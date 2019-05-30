@@ -1,16 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net472</TargetFrameworks>
     <Authors>IoannisTsirovasilis</Authors>
     <PackageId>AlwaysEncryptedIdentity</PackageId>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl></PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity</PackageProjectUrl>
     <RepositoryUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity</RepositoryUrl>
     <PackageTags>.net framework, identity, always encrypted, asp .net, aspnet, .net, encryption</PackageTags>
     <NeutralLanguage></NeutralLanguage>
     <Description>An extension of ASP .NET Identity system to work with Always Encrypted feature.</Description>
-    <Version>1.0.1.3</Version>
+    <Version>1.0.1.4</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
