@@ -15,15 +15,11 @@ namespace AlwaysEncryptedIdentity
         private dynamic db;
         private bool _disposed;
         private new IUserStore<TUser, string> Store { get; set; }
-        private IIdentityValidator<TUser> _userValidator;
-        private IIdentityValidator<string> _passwordValidator;
 
         public UserManagerExtension(IUserStore<TUser, string> store, dynamic db) : base(store)
         {
             Store = store;
             this.db = db;
-            UserValidator = new UserValidator<TUser, string>(this);
-            PasswordValidator = new MinimumLengthValidator(6);
         }
 
         public virtual async Task<IdentityResult> CreateAsync(TUser user, string password)
@@ -39,6 +35,11 @@ namespace AlwaysEncryptedIdentity
                 throw new ArgumentNullException("password");
             }
             var result = await UserValidator.ValidateAsync(user).WithCurrentCulture();
+            if (!result.Succeeded)
+            {
+                return result;
+            }
+            result = await PasswordValidator.ValidateAsync(password).WithCurrentCulture();
             if (!result.Succeeded)
             {
                 return result;
