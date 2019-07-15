@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Data.Entity;
+using System.Data.Entity.SqlServer.Utilities;
 using System.Threading.Tasks;
 
 namespace AlwaysEncryptedIdentity
@@ -8,10 +9,25 @@ namespace AlwaysEncryptedIdentity
     public class UserStoreExtension<TUser> : UserStore<TUser> where TUser : IdentityUser
     {
         private bool _disposed;
+        private readonly DbSet _userStore;
+        private new readonly IdentityDbContext<TUser> Context;
 
-        public UserStoreExtension(DbContext context)
+        public UserStoreExtension(IdentityDbContext<TUser> context)
             : base(context)
         {
+            Context = context;
+            _userStore = Context.Set<TUser>();
+        }
+
+        public override async Task CreateAsync(TUser user)
+        {
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            _userStore.Add(user);
+            await SaveChanges().WithCurrentCulture();
         }
 
         public override async Task<TUser> FindByNameAsync(string userName)
@@ -32,6 +48,25 @@ namespace AlwaysEncryptedIdentity
         {
             ThrowIfDisposed();
             return await GetUserAggregateAsync(u => u.Id == userId);
+        }
+
+        public override Task SetEmailConfirmedAsync(TUser user, bool confirmed)
+        {
+            ThrowIfDisposed();
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+            user.EmailConfirmed = confirmed;
+            return Task.FromResult(0);
+        }
+
+        private async Task SaveChanges()
+        {
+            if (AutoSaveChanges)
+            {
+                await Context.SaveChangesAsync().WithCurrentCulture();
+            }
         }
 
         private void ThrowIfDisposed()
