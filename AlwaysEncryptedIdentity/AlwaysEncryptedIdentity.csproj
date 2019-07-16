@@ -4,14 +4,14 @@
     <TargetFrameworks>net472</TargetFrameworks>
     <Authors>IoannisTsirovasilis</Authors>
     <PackageId>AlwaysEncryptedIdentity</PackageId>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity</PackageProjectUrl>
     <RepositoryUrl>https://github.com/IoannisTsirovasilis/AlwaysEncryptedIdentity</RepositoryUrl>
     <PackageTags>.net framework, identity, always encrypted, asp .net, aspnet, .net, encryption</PackageTags>
     <NeutralLanguage></NeutralLanguage>
     <Description>An extension of ASP .NET Identity system to work with Always Encrypted feature.</Description>
-    <Version>1.0.3</Version>
-    <PackageReleaseNotes>Fixed a bug where a user could register without validating the password.</PackageReleaseNotes>
+    <Version>1.0.4</Version>
+    <PackageReleaseNotes>Simplified code</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   
