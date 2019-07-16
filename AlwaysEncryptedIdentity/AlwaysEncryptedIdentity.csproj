@@ -20,7 +20,6 @@
     <Reference Include="System.Runtime.Caching" />
     <PackageReference Include="EntityFramework" Version="6.2.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.2" />
-    <PackageReference Include="System.Web.Helpers.Crypto" Version="3.2.3" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Globalization" />
   </ItemGroup>
