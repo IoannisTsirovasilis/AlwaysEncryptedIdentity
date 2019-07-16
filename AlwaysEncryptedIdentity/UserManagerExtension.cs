@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -14,9 +13,9 @@ namespace AlwaysEncryptedIdentity
         private new IUserStore<TUser, string> Store { get; set; }
        
 
-        public UserManagerExtension(IUserStore<TUser, string> store) : base(store)
+        public UserManagerExtension(IUserStore<TUser, string> store, string connectionStringName = "DefaultConnection") : base(store)
         {
-            dbContext = new IdentityDbContext<TUser>("DefaultConnection");
+            dbContext = new IdentityDbContext<TUser>(connectionStringName);
             Store = new UserStoreExtension<TUser>(dbContext);
         }
 
@@ -48,53 +47,15 @@ namespace AlwaysEncryptedIdentity
             }
             await Store.CreateAsync(user).WithCurrentCulture();
             return IdentityResult.Success;
-        }
-
-        public override async Task<IdentityResult> ConfirmEmailAsync(string userId, string token)
-        {
-            ThrowIfDisposed();
-            var store = GetEmailStore();
-            var user = await FindByIdAsync(userId).WithCurrentCulture();
-            if (user == null)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "UserIdNotFound", userId));
-            }
-            if (!await VerifyUserTokenAsync(userId, "Confirmation", token).WithCurrentCulture())
-            {
-                return IdentityResult.Failed("InvalidToken");
-            }
-            await store.SetEmailConfirmedAsync(user, true).WithCurrentCulture();
-            return await UpdateAsync(user).WithCurrentCulture();
-        }
+        }   
         
         private IUserPasswordStore<TUser, string> GetPasswordStore()
         {
-            var cast = Store as IUserPasswordStore<TUser, string>;
-            if (cast == null)
+            if (Store is IUserPasswordStore<TUser, string> cast)
             {
-                throw new NotSupportedException("StoreNotIUserPasswordStore");
+                return cast;
             }
-            return cast;
-        }
-
-        private IUserEmailStore<TUser, string> GetEmailStore()
-        {
-            var cast = Store as IUserEmailStore<TUser, string>;
-            if (cast == null)
-            {
-                throw new NotSupportedException("StoreNotIUserEmailStore");
-            }
-            return cast;
-        }
-
-        private IUserSecurityStampStore<TUser, string> GetSecurityStore()
-        {
-            var cast = Store as IUserSecurityStampStore<TUser, string>;
-            if (cast == null)
-            {
-                throw new NotSupportedException("StoreNotIUserSecurityStampStore");
-            }
-            return cast;
+            throw new NotSupportedException("StoreNotIUserPasswordStore");
         }
 
         private void ThrowIfDisposed()

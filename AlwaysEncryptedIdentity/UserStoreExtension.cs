@@ -44,23 +44,6 @@ namespace AlwaysEncryptedIdentity
             return await GetUserAggregateAsync(u => u.Email == email);
         }
 
-        public override async Task<TUser> FindByIdAsync(string userId)
-        {
-            ThrowIfDisposed();
-            return await GetUserAggregateAsync(u => u.Id == userId);
-        }
-
-        public override Task SetEmailConfirmedAsync(TUser user, bool confirmed)
-        {
-            ThrowIfDisposed();
-            if (user == null)
-            {
-                throw new ArgumentNullException("user");
-            }
-            user.EmailConfirmed = confirmed;
-            return Task.FromResult(0);
-        }
-
         private async Task SaveChanges()
         {
             if (AutoSaveChanges)
